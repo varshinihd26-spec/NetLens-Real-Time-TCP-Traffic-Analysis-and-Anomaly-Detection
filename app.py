@@ -15,7 +15,7 @@ def index():
 
 @app.route("/api/data")
 def api_data():
-    """Provides real-time TCP packet data, statistics, and anomalies."""
+    """Real-time TCP packet data, statistics, and anomalies."""
     data = get_dashboard_data()
     return jsonify(data)
 
