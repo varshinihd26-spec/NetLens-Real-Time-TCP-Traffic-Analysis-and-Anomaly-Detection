@@ -3,7 +3,7 @@ from sniffer import start_sniffer, get_dashboard_data
 
 app = Flask(__name__)
 
-# Start the background packet capture engine
+
 start_sniffer()
 
 
