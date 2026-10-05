@@ -3,13 +3,13 @@ import threading
 from collections import deque, defaultdict
 from scapy.all import sniff, IP, TCP
 
-# Global thread-safe lock
+
 lock = threading.Lock()
 
-# Store up to 50 recent captured TCP packets
+
 captured_packets = deque(maxlen=50)
 
-# Real-time traffic statistics
+
 stats = {
     "total": 0,
     "syn": 0,
@@ -20,19 +20,19 @@ stats = {
     "data": 0
 }
 
-# TCP Connection Flow sequence history
+
 connection_flow = deque(maxlen=10)
 
-# Anomaly History log
+
 anomalies_history = deque(maxlen=20)
 
-# Tracking data for rule-based analysis
+
 syn_timestamps = deque(maxlen=100)
 rst_timestamps = deque(maxlen=100)
 port_scan_tracker = defaultdict(set)
 last_scan_reset = time.time()
 
-# Background sniffer control flag
+
 sniffing_active = False
 
 
@@ -82,21 +82,21 @@ def run_anomaly_rules(src_ip, dst_port, f_str, current_time):
 
     detected_anomalies = []
 
-    # Track timestamps for rate checks
+    
     if "SYN" in f_str and "ACK" not in f_str:
         syn_timestamps.append(current_time)
 
     if "RST" in f_str:
         rst_timestamps.append(current_time)
 
-    # Remove timestamps older than 5 seconds
+    
     while syn_timestamps and current_time - syn_timestamps[0] > 5:
         syn_timestamps.popleft()
 
     while rst_timestamps and current_time - rst_timestamps[0] > 5:
         rst_timestamps.popleft()
 
-    # Rule 1: High SYN Rate
+   
     if len(syn_timestamps) > 15:
         detected_anomalies.append({
             "timestamp": time.strftime("%H:%M:%S"),
@@ -106,7 +106,7 @@ def run_anomaly_rules(src_ip, dst_port, f_str, current_time):
             "recommendation": "Check source IP connection limits and consider enabling SYN cookies on firewall."
         })
 
-    # Rule 2: High RST Rate
+   
     if len(rst_timestamps) > 10:
         detected_anomalies.append({
             "timestamp": time.strftime("%H:%M:%S"),
@@ -116,7 +116,7 @@ def run_anomaly_rules(src_ip, dst_port, f_str, current_time):
             "recommendation": "Inspect server error logs and verify if target ports are open or filtered."
         })
 
-    # Rule 3: NULL Scan / Xmas Scan
+   
     if f_str == "NONE":
         detected_anomalies.append({
             "timestamp": time.strftime("%H:%M:%S"),
@@ -135,7 +135,7 @@ def run_anomaly_rules(src_ip, dst_port, f_str, current_time):
             "recommendation": "Configure IDS/IPS to drop stealth scan packets."
         })
 
-    # Rule 4: Port Scan Tracker
+   
     global last_scan_reset
 
     if current_time - last_scan_reset > 10:
@@ -202,7 +202,7 @@ def process_packet(packet):
 
         stats["total"] += 1
 
-        # Update TCP flag statistics
+        
         if "SYN" in flags_str and "ACK" in flags_str:
             stats["syn_ack"] += 1
 
@@ -218,11 +218,11 @@ def process_packet(packet):
         elif "ACK" in flags_str:
             stats["ack"] += 1
 
-        # Detect TCP data
+        
         if len(tcp_layer.payload) > 0:
             stats["data"] += 1
 
-        # Track connection flow
+        
         connection_flow.appendleft({
             "stage": flow_stage,
             "src": f"{ip_layer.src}:{tcp_layer.sport}",
@@ -230,7 +230,7 @@ def process_packet(packet):
             "time": pkt_data["timestamp"]
         })
 
-        # Run anomaly detection
+        
         anomalies = run_anomaly_rules(
             ip_layer.src,
             tcp_layer.dport,
@@ -240,7 +240,7 @@ def process_packet(packet):
 
         for anomaly in anomalies:
 
-            # Prevent duplicate immediate alerts
+           
             if (
                 not anomalies_history
                 or anomalies_history[0]["alert"] != anomaly["alert"]
