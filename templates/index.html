@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NetLens - Real-Time TCP Analysis</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    #123d70 0%,
+                    #08284d 35%,
+                    #031a35 70%,
+                    #021329 100%
+                );
+
+        }
+
+
+        /* MAIN CONTAINER */
+
+        .container {
+
+            width: 92%;
+
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 25px 0 50px;
+
+        }
+
+
+        /* HEADER */
+
+        .header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 20px 25px;
+
+            margin-bottom: 16px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #124f87,
+                    #0b315f
+                );
+
+            border: 1px solid
+                rgba(80, 190, 255, 0.35);
+
+            box-shadow:
+                0 8px 25px
+                rgba(0, 0, 0, 0.25);
+
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+        }
+
+
+        .brand-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00d9ff,
+                    #238cff
+                );
+
+            box-shadow:
+                0 0 15px
+                rgba(0, 217, 255, 0.5);
+
+        }
+
+
+        .brand h1 {
+
+            margin: 0;
+
+            font-size: 25px;
+
+            color: #22d9ff;
+
+        }
+
+
+        .brand p {
+
+            margin: 3px 0 0;
+
+            font-size: 12px;
+
+            color: #c8e7ff;
+
+        }
+
+
+        /* STATUS */
+
+        .traffic-status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+        }
+
+
+        .normal-badge {
+
+            padding: 7px 15px;
+
+            border-radius: 20px;
+
+            background: #0ac878;
+
+            color: white;
+
+            box-shadow:
+                0 0 12px
+                rgba(10, 200, 120, 0.5);
+
+        }
+
+
+        /* STATISTICS */
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .stat-card {
+
+            min-height: 105px;
+
+            padding: 18px;
+
+            text-align: center;
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #124d83,
+                    #0b3768
+                );
+
+            border: 1px solid
+                rgba(75, 190, 255, 0.32);
+
+            box-shadow:
+                0 6px 18px
+                rgba(0, 0, 0, 0.25);
+
+        }
+
+
+        .stat-title {
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            color: #d7edff;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .stat-value {
+
+            font-size: 27px;
+
+            font-weight: bold;
+
+            color: #24dcff;
+
+            text-shadow:
+                0 0 10px
+                rgba(36, 220, 255, 0.3);
+
+        }
+
+
+        .health-value {
+
+            color: #20f17d;
+
+        }
+
+
+        .red-value {
+
+            color: #ff6969;
+
+        }
+
+
+        /* GENERAL PANEL */
+
+        .panel {
+
+            padding: 18px;
+
+            margin-bottom: 12px;
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0d426f,
+                    #082e5a
+                );
+
+            border: 1px solid
+                rgba(75, 190, 255, 0.30);
+
+            box-shadow:
+                0 6px 18px
+                rgba(0, 0, 0, 0.25);
+
+        }
+
+
+        .panel-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 15px;
+
+            color: #22d9ff;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ANOMALY */
+
+        .anomaly-box {
+
+            min-height: 95px;
+
+            padding: 16px;
+
+            border-left: 4px solid #19e778;
+
+            border-radius: 5px;
+
+            background:
+                rgba(4, 24, 48, 0.45);
+
+        }
+
+
+        .anomaly-title {
+
+            color: #eafff3;
+
+            font-weight: bold;
+
+            font-size: 14px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .anomaly-message {
+
+            color: #b9d7ee;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .severity {
+
+            float: right;
+
+            padding: 5px 13px;
+
+            border-radius: 15px;
+
+            background: #18c879;
+
+            color: white;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+        }
+
+
+        .warning {
+
+            border-left-color: #ffb020;
+
+        }
+
+
+        .critical {
+
+            border-left-color: #ff4545;
+
+        }
+
+
+        .critical .severity {
+
+            background: #e53935;
+
+        }
+
+
+        .warning .severity {
+
+            background: #e89b13;
+
+        }
+
+
+        /* FLOW */
+
+        .flow-container {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 18px;
+
+            flex-wrap: wrap;
+
+            padding: 10px;
+
+        }
+
+
+        .flow-stage {
+
+            min-width: 55px;
+
+            padding: 9px 13px;
+
+            text-align: center;
+
+            border-radius: 5px;
+
+            background:
+                #155183;
+
+            border: 1px solid
+                #3f83b7;
+
+            color: #d9efff;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+        }
+
+
+        .flow-stage.active {
+
+            background:
+                #12a7d4;
+
+            color: white;
+
+            box-shadow:
+                0 0 13px
+                rgba(18, 167, 212, 0.7);
+
+        }
+
+
+        .arrow {
+
+            color: #56cfff;
+
+            font-size: 17px;
+
+        }
+
+
+        .flow-info {
+
+            margin-top: 10px;
+
+            text-align: center;
+
+            color: #a9cae4;
+
+            font-size: 11px;
+
+        }
+
+
+        /* TRAFFIC RATE */
+
+        .traffic-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+
+        .rate-value {
+
+            color: #27dfff;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+        }
+
+
+        .chart-container {
+
+            height: 220px;
+
+            position: relative;
+
+            margin-top: 10px;
+
+        }
+
+
+        #trafficChart {
+
+            width: 100%;
+
+            height: 100%;
+
+        }
+
+
+        /* PACKET TABLE */
+
+        .table-wrapper {
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 800px;
+
+        }
+
+
+        th {
+
+            padding: 11px;
+
+            text-align: left;
+
+            color: #d9efff;
+
+            background:
+                rgba(2, 22, 44, 0.45);
+
+            font-size: 11px;
+
+        }
+
+
+        td {
+
+            padding: 10px;
+
+            border-bottom:
+                1px solid
+                rgba(130, 190, 230, 0.15);
+
+            color: #cce6f7;
+
+            font-size: 11px;
+
+        }
+
+
+        tr:hover {
+
+            background:
+                rgba(50, 160, 220, 0.10);
+
+        }
+
+
+        .flag {
+
+            color: #28ddff;
+
+            font-weight: bold;
+
+        }
+
+
+        .stage-tag {
+
+            display: inline-block;
+
+            padding: 4px 9px;
+
+            border-radius: 12px;
+
+            background: #116b67;
+
+            color: #6effce;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* RESPONSIVE */
+
+        @media(max-width: 800px) {
+
+            .stats-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .header {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+
+            }
+
+        }
+
+
+        @media(max-width: 500px) {
+
+            .stats-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .container {
+
+                width: 95%;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                ●
+            </div>
+
+            <div>
+
+                <h1>
+                    NetLens
+                </h1>
+
+                <p>
+                    Real-Time TCP Traffic Analysis & Automatic Diagnosis
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="traffic-status">
+
+            Traffic Status:
+
+            <span
+                class="normal-badge"
+                id="status">
+                NORMAL
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                TCP HEALTH SCORE
+            </div>
+
+            <div
+                class="stat-value health-value"
+                id="health">
+                100%
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                TOTAL PACKETS
+            </div>
+
+            <div
+                class="stat-value"
+                id="total">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                SYN / SYN-ACK
+            </div>
+
+            <div class="stat-value">
+
+                <span id="syn">
+                    0
+                </span>
+
+                /
+
+                <span id="synack">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                ACK / DATA
+            </div>
+
+            <div class="stat-value">
+
+                <span id="ack">
+                    0
+                </span>
+
+                /
+
+                <span id="data">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                FIN / RST
+            </div>
+
+            <div class="stat-value">
+
+                <span id="fin">
+                    0
+                </span>
+
+                /
+
+                <span
+                    id="rst"
+                    class="red-value">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ANOMALY -->
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            🔥 Detected Anomaly & Automatic Diagnosis
+
+        </div>
+
+
+        <div
+            id="anomalyContainer"
+            class="anomaly-box">
+
+            <span class="severity">
+                SAFE
+            </span>
+
+            <div class="anomaly-title">
+
+                No Anomaly Detected
+
+            </div>
+
+            <div class="anomaly-message">
+
+                Normal TCP traffic pattern.
+                No suspicious activity detected
+                within current monitoring parameters.
+
+                <br>
+
+                Recommendation:
+                Continue monitoring for unusual behavior.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TCP FLOW -->
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            ▣ TCP Connection Flow Stage
+
+        </div>
+
+
+        <div class="flow-container">
+
+
+            <div
+                class="flow-stage"
+                id="flow-SYN">
+                SYN
+            </div>
+
+
+            <div class="arrow">
+                →
+            </div>
+
+
+            <div
+                class="flow-stage"
+                id="flow-SYN-ACK">
+                SYN-ACK
+            </div>
+
+
+            <div class="arrow">
+                →
+            </div>
+
+
+            <div
+                class="flow-stage"
+                id="flow-ACK">
+                ACK
+            </div>
+
+
+            <div class="arrow">
+                →
+            </div>
+
+
+            <div
+                class="flow-stage"
+                id="flow-DATA">
+                DATA
+            </div>
+
+
+            <div class="arrow">
+                →
+            </div>
+
+
+            <div
+                class="flow-stage"
+                id="flow-FIN">
+                FIN
+            </div>
+
+
+        </div>
+
+
+        <div
+            class="flow-info"
+            id="flowInfo">
+
+            Recent Active Flow:
+            Awaiting packets...
+
+        </div>
+
+    </div>
+
+
+
+    <!-- REAL TIME RATE -->
+
+    <div class="panel">
+
+        <div class="traffic-header">
+
+            <div class="panel-title">
+
+                ▣ Real-Time TCP Traffic Rate
+
+            </div>
+
+
+            <div
+                class="rate-value"
+                id="trafficRate">
+
+                0 packets/sec
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+            <canvas
+                id="trafficChart">
+            </canvas>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- LIVE PACKETS -->
+
+    <div class="panel">
+
+        <div class="panel-title">
+
+            🟡 Live Captured TCP Packets
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Time
+                        </th>
+
+                        <th>
+                            Source IP : Port
+                        </th>
+
+                        <th>
+                            Destination IP : Port
+                        </th>
+
+                        <th>
+                            TCP Flags
+                        </th>
+
+                        <th>
+                            Size (Bytes)
+                        </th>
+
+                        <th>
+                            Flow Stage
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="packets">
+
+                    <tr>
+
+                        <td colspan="6"
+                            style="text-align:center">
+
+                            Listening for live TCP packets...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+
+let previousTotal = 0;
+
+let trafficHistory = [];
+
+let lastFlowStage = "";
+
+
+/* =========================
+   CANVAS
+========================= */
+
+
+const canvas =
+    document.getElementById(
+        "trafficChart"
+    );
+
+const ctx =
+    canvas.getContext("2d");
+
+
+/* =========================
+   DRAW TRAFFIC GRAPH
+========================= */
+
+
+function drawTrafficChart() {
+
+
+    const width =
+        canvas.clientWidth;
+
+    const height =
+        canvas.clientHeight;
+
+
+    canvas.width = width;
+
+    canvas.height = height;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+        "rgba(120,190,230,0.15)";
+
+    ctx.lineWidth = 1;
+
+
+    for (
+        let i = 0;
+        i < 5;
+        i++
+    ) {
+
+        const y =
+            15 +
+            i *
+            ((height - 30) / 4);
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            25,
+            y
+        );
+
+        ctx.lineTo(
+            width - 20,
+            y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    if (
+        trafficHistory.length < 2
+    ) {
+
+        return;
+
+    }
+
+
+    const maxValue =
+        Math.max(
+            ...trafficHistory,
+            1
+        );
+
+
+    /* LINE */
+
+    ctx.beginPath();
+
+    trafficHistory.forEach(
+        (value, index) => {
+
+
+            const x =
+                25 +
+                index *
+                (
+                    (width - 45) /
+                    (
+                        trafficHistory.length - 1
+                    )
+                );
+
+
+            const y =
+                height -
+                20 -
+                (
+                    value /
+                    maxValue
+                ) *
+                (
+                    height - 40
+                );
+
+
+            if (index === 0) {
+
+                ctx.moveTo(
+                    x,
+                    y
+                );
+
+            } else {
+
+                ctx.lineTo(
+                    x,
+                    y
+                );
+
+            }
+
+        }
+    );
+
+
+    ctx.strokeStyle =
+        "#21dfff";
+
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
+
+
+    /* POINTS */
+
+    trafficHistory.forEach(
+        (value, index) => {
+
+
+            const x =
+                25 +
+                index *
+                (
+                    (width - 45) /
+                    (
+                        trafficHistory.length - 1
+                    )
+                );
+
+
+            const y =
+                height -
+                20 -
+                (
+                    value /
+                    maxValue
+                ) *
+                (
+                    height - 40
+                );
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                x,
+                y,
+                3,
+                0,
+                Math.PI * 2
+            );
+
+
+            ctx.fillStyle =
+                "#21dfff";
+
+            ctx.fill();
+
+        }
+    );
+
+}
+
+
+/* =========================
+   FLOW STAGE
+========================= */
+
+
+function updateFlowStage(
+    stage
+) {
+
+
+    const stages = [
+        "SYN",
+        "SYN-ACK",
+        "ACK",
+        "DATA",
+        "FIN"
+    ];
+
+
+    stages.forEach(
+        item => {
+
+            const element =
+                document.getElementById(
+                    "flow-" + item
+                );
+
+
+            if (element) {
+
+                element.classList.remove(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+
+    if (!stage) {
+
+        return;
+
+    }
+
+
+    const current =
+        document.getElementById(
+            "flow-" + stage
+        );
+
+
+    if (current) {
+
+        current.classList.add(
+            "active"
+        );
+
+    }
+
+
+    document.getElementById(
+        "flowInfo"
+    ).innerText =
+        "Recent Active Flow: " +
+        stage;
+
+}
+
+
+/* =========================
+   UPDATE ANOMALIES
+========================= */
+
+
+function updateAnomalies(
+    anomalies
+) {
+
+
+    const container =
+        document.getElementById(
+            "anomalyContainer"
+        );
+
+
+    if (
+        !anomalies ||
+        anomalies.length === 0
+    ) {
+
+
+        container.className =
+            "anomaly-box";
+
+
+        container.innerHTML = `
+
+            <span class="severity">
+                SAFE
+            </span>
+
+            <div class="anomaly-title">
+
+                No Anomaly Detected
+
+            </div>
+
+            <div class="anomaly-message">
+
+                Normal TCP traffic pattern.
+                No suspicious activity detected
+                within current monitoring parameters.
+
+                <br>
+
+                Recommendation:
+                Continue monitoring for unusual behavior.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    const anomaly =
+        anomalies[0];
+
+
+    let severity =
+        anomaly.severity ||
+        anomaly.level ||
+        "WARNING";
+
+
+    let alert =
+        anomaly.alert ||
+        anomaly.type ||
+        "Anomaly Detected";
+
+
+    let message =
+        anomaly.message ||
+        anomaly.description ||
+        "Suspicious TCP activity detected.";
+
+
+    let cssClass =
+        "anomaly-box";
+
+
+    if (
+        severity === "CRITICAL"
+    ) {
+
+        cssClass +=
+            " critical";
+
+    }
+
+    else if (
+        severity === "WARNING"
+    ) {
+
+        cssClass +=
+            " warning";
+
+    }
+
+
+    container.className =
+        cssClass;
+
+
+    container.innerHTML = `
+
+        <span class="severity">
+
+            ${severity}
+
+        </span>
+
+
+        <div class="anomaly-title">
+
+            ⚠ ${alert}
+
+        </div>
+
+
+        <div class="anomaly-message">
+
+            ${message}
+
+            <br>
+
+            Recommendation:
+            Investigate the source and
+            continue monitoring the connection.
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   UPDATE PACKETS
+========================= */
+
+
+function updatePackets(
+    packets
+) {
+
+
+    const table =
+        document.getElementById(
+            "packets"
+        );
+
+
+    table.innerHTML = "";
+
+
+    if (
+        !packets ||
+        packets.length === 0
+    ) {
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    style="text-align:center">
+
+                    Listening for live TCP packets...
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    packets.forEach(
+        packet => {
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    ${packet.timestamp}
+
+                </td>
+
+
+                <td>
+
+                    ${packet.src_ip}:${packet.src_port}
+
+                </td>
+
+
+                <td>
+
+                    ${packet.dst_ip}:${packet.dst_port}
+
+                </td>
+
+
+                <td>
+
+                    <span class="flag">
+
+                        ${packet.flags}
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    ${packet.size}
+
+                </td>
+
+
+                <td>
+
+                    <span class="stage-tag">
+
+                        ${packet.stage}
+
+                    </span>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   MAIN UPDATE
+========================= */
+
+
+function updateDashboard() {
+
+
+    fetch(
+        "/api/data"
+    )
+
+    .then(
+        response =>
+            response.json()
+    )
+
+    .then(
+        data => {
+
+
+            /* HEALTH */
+
+            document.getElementById(
+                "health"
+            ).innerText =
+                data.health_score + "%";
+
+
+            /* TOTAL */
+
+            document.getElementById(
+                "total"
+            ).innerText =
+                data.stats.total;
+
+
+            /* FLAGS */
+
+            document.getElementById(
+                "syn"
+            ).innerText =
+                data.stats.syn;
+
+
+            document.getElementById(
+                "synack"
+            ).innerText =
+                data.stats.syn_ack;
+
+
+            document.getElementById(
+                "ack"
+            ).innerText =
+                data.stats.ack;
+
+
+            document.getElementById(
+                "data"
+            ).innerText =
+                data.stats.data;
+
+
+            document.getElementById(
+                "fin"
+            ).innerText =
+                data.stats.fin;
+
+
+            document.getElementById(
+                "rst"
+            ).innerText =
+                data.stats.rst;
+
+
+
+            /* STATUS */
+
+            const status =
+                document.getElementById(
+                    "status"
+                );
+
+
+            status.innerText =
+                data.status;
+
+
+            if (
+                data.status ===
+                "CRITICAL"
+            ) {
+
+                status.style.background =
+                    "#e53935";
+
+            }
+
+            else if (
+                data.status ===
+                "WARNING"
+            ) {
+
+                status.style.background =
+                    "#e89b13";
+
+            }
+
+            else {
+
+                status.style.background =
+                    "#0ac878";
+
+            }
+
+
+
+            /* REAL-TIME RATE */
+
+            const currentTotal =
+                data.stats.total;
+
+
+            const rate =
+                Math.max(
+                    0,
+                    currentTotal -
+                    previousTotal
+                );
+
+
+            previousTotal =
+                currentTotal;
+
+
+            document.getElementById(
+                "trafficRate"
+            ).innerText =
+                rate +
+                " packets/sec";
+
+
+            trafficHistory.push(
+                rate
+            );
+
+
+            if (
+                trafficHistory.length >
+                25
+            ) {
+
+                trafficHistory.shift();
+
+            }
+
+
+            drawTrafficChart();
+
+
+
+            /* PACKETS */
+
+            updatePackets(
+                data.packets
+            );
+
+
+
+            /* ANOMALIES */
+
+            updateAnomalies(
+                data.anomalies
+            );
+
+
+
+            /* FLOW */
+
+            if (
+                data.flow &&
+                data.flow.length > 0
+            ) {
+
+
+                const latestFlow =
+                    data.flow[0];
+
+
+                updateFlowStage(
+                    latestFlow.stage
+                );
+
+            }
+
+        }
+    )
+
+    .catch(
+        error => {
+
+            console.log(
+                "Dashboard error:",
+                error
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+
+updateDashboard();
+
+
+setInterval(
+    updateDashboard,
+    1000
+);
+
+
+window.addEventListener(
+    "resize",
+    drawTrafficChart
+);
+
+
+</script>
+
+
+</body>
+
+</html>
