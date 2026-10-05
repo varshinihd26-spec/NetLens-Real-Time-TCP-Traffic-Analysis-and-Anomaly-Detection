@@ -43,7 +43,7 @@
         }
 
 
-        /* MAIN CONTAINER */
+  
 
         .container {
 
@@ -188,7 +188,7 @@
         }
 
 
-        /* STATISTICS */
+
 
         .stats-grid {
 
@@ -273,7 +273,7 @@
         }
 
 
-        /* GENERAL PANEL */
+       
 
         .panel {
 
@@ -319,7 +319,7 @@
         }
 
 
-        /* ANOMALY */
+     
 
         .anomaly-box {
 
@@ -408,7 +408,6 @@
         }
 
 
-        /* FLOW */
 
         .flow-container {
 
@@ -488,7 +487,6 @@
         }
 
 
-        /* TRAFFIC RATE */
 
         .traffic-header {
 
@@ -532,7 +530,7 @@
         }
 
 
-        /* PACKET TABLE */
+       
 
         .table-wrapper {
 
@@ -619,7 +617,7 @@
         }
 
 
-        /* RESPONSIVE */
+        
 
         @media(max-width: 800px) {
 
@@ -671,7 +669,7 @@
 <div class="container">
 
 
-    <!-- HEADER -->
+   
 
     <div class="header">
 
@@ -712,7 +710,7 @@
 
 
 
-    <!-- STATISTICS -->
+   
 
     <div class="stats-grid">
 
@@ -822,7 +820,7 @@
 
 
 
-    <!-- ANOMALY -->
+   
 
     <div class="panel">
 
@@ -866,7 +864,7 @@
 
 
 
-    <!-- TCP FLOW -->
+    
 
     <div class="panel">
 
@@ -951,7 +949,7 @@
 
 
 
-    <!-- REAL TIME RATE -->
+   
 
     <div class="panel">
 
@@ -987,7 +985,6 @@
 
 
 
-    <!-- LIVE PACKETS -->
 
     <div class="panel">
 
@@ -1064,9 +1061,6 @@
 <script>
 
 
-/* =========================
-   VARIABLES
-========================= */
 
 
 let previousTotal = 0;
@@ -1076,9 +1070,7 @@ let trafficHistory = [];
 let lastFlowStage = "";
 
 
-/* =========================
-   CANVAS
-========================= */
+
 
 
 const canvas =
@@ -1090,9 +1082,7 @@ const ctx =
     canvas.getContext("2d");
 
 
-/* =========================
-   DRAW TRAFFIC GRAPH
-========================= */
+
 
 
 function drawTrafficChart() {
@@ -1118,7 +1108,7 @@ function drawTrafficChart() {
     );
 
 
-    /* GRID */
+   
 
     ctx.strokeStyle =
         "rgba(120,190,230,0.15)";
@@ -1171,7 +1161,7 @@ function drawTrafficChart() {
         );
 
 
-    /* LINE */
+ 
 
     ctx.beginPath();
 
@@ -1281,9 +1271,6 @@ function drawTrafficChart() {
 }
 
 
-/* =========================
-   FLOW STAGE
-========================= */
 
 
 function updateFlowStage(
@@ -1352,9 +1339,7 @@ function updateFlowStage(
 }
 
 
-/* =========================
-   UPDATE ANOMALIES
-========================= */
+
 
 
 function updateAnomalies(
@@ -1493,9 +1478,6 @@ function updateAnomalies(
 }
 
 
-/* =========================
-   UPDATE PACKETS
-========================= */
 
 
 function updatePackets(
@@ -1614,9 +1596,6 @@ function updatePackets(
 }
 
 
-/* =========================
-   MAIN UPDATE
-========================= */
 
 
 function updateDashboard() {
@@ -1635,7 +1614,7 @@ function updateDashboard() {
         data => {
 
 
-            /* HEALTH */
+          
 
             document.getElementById(
                 "health"
@@ -1643,7 +1622,7 @@ function updateDashboard() {
                 data.health_score + "%";
 
 
-            /* TOTAL */
+            
 
             document.getElementById(
                 "total"
@@ -1651,8 +1630,7 @@ function updateDashboard() {
                 data.stats.total;
 
 
-            /* FLAGS */
-
+           
             document.getElementById(
                 "syn"
             ).innerText =
@@ -1690,7 +1668,7 @@ function updateDashboard() {
 
 
 
-            /* STATUS */
+           
 
             const status =
                 document.getElementById(
@@ -1731,7 +1709,7 @@ function updateDashboard() {
 
 
 
-            /* REAL-TIME RATE */
+           
 
             const currentTotal =
                 data.stats.total;
@@ -1775,23 +1753,21 @@ function updateDashboard() {
 
 
 
-            /* PACKETS */
-
+           
             updatePackets(
                 data.packets
             );
 
 
 
-            /* ANOMALIES */
-
+           
             updateAnomalies(
                 data.anomalies
             );
 
 
 
-            /* FLOW */
+            
 
             if (
                 data.flow &&
@@ -1826,9 +1802,7 @@ function updateDashboard() {
 }
 
 
-/* =========================
-   START
-========================= */
+
 
 
 updateDashboard();
